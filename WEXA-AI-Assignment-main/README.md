@@ -1,410 +1,229 @@
 # 🚀 Conference Networking Platform
 
-A full-stack graph database application built using **Spring Boot**, **React**, and **CognoDB**.
+A full-stack application designed to help conference attendees discover **relevant sessions, career opportunities, and people to connect with**.
 
-This application recommends conference sessions, recruiters, and networking connections by traversing relationships in a graph database.
+The project combines **React, Spring Boot, and CognoDB** to build recommendations using relationships between attendees, skills, topics, recruiters, sessions, and companies.
 
----
+## 📌 What This Project Does
 
-# 📌 Project Overview
+The platform takes an attendee's skills and interests and uses graph relationships to find useful recommendations.
 
-The Conference Networking Platform helps conference attendees discover relevant opportunities based on their interests and skills.
+### 🎤 Sessions
 
-Unlike traditional relational databases, this application uses a **graph database** to efficiently traverse relationships between attendees, skills, topics, sessions, recruiters, and companies.
+Shows conference sessions related to the topics an attendee is interested in.
 
-The application provides:
-
-- 🎤 Session Recommendations
-- 💼 Recruiter Recommendations
-- 🤝 Networking Recommendations
-
-
----
-
-The recommendations shown are generated dynamically based on the graph relationships stored in CognoDB. Different attendees may receive different recommendations depending on their skills and interests.
-
-# ✨ Features
-
-## 🎤 Session Recommendation
-
-Recommends conference sessions based on the attendee's interests.
-
-Graph Relationship:
-
-```
-Attendee → INTERESTED_IN → Topic ← COVERS ← Session
+```text
+Attendee → Interest → Topic → Session
 ```
 
-Example Response (Attendee ID = 1)
+### 💼 Recruiters
 
-```json
-[
-  {
-    "sessionName": "Modern Java",
-    "topic": "Artificial Intelligence"
-  }
-]
+Finds recruiters and companies looking for skills that match the attendee.
+
+```text
+Attendee → Skill → Recruiter → Company
 ```
 
----
+### 🤝 Networking
 
-## 💼 Recruiter Recommendation
+Finds other attendees who have similar skills and can be potential networking connections.
 
-Suggests recruiters hiring for the attendee's skills.
-
-Graph Relationship:
-
-```
-Attendee → HAS_SKILL → Skill ← HIRING_FOR ← Recruiter → WORKS_FOR → Company
+```text
+Attendee → Skill ← Attendee
 ```
 
-Example Response (Attendee ID = 1)
+## 🛠 Technologies
 
-```json
-[
-  {
-    "recruiterName": "Anita",
-    "company": "Google"
-  }
-]
+| Area            | Technology         |
+| --------------- | ------------------ |
+| Frontend        | React, Vite, Axios |
+| Backend         | Java, Spring Boot  |
+| Build Tool      | Maven              |
+| Database        | CognoDB            |
+| Query Language  | openCypher         |
+| Database Driver | Neo4j Java Driver  |
+
+## 🏗 Application Flow
+
+```text
+       React UI
+          │
+          ▼
+      REST APIs
+          │
+          ▼
+    Spring Boot
+          │
+          ▼
+ Neo4j Java Driver
+          │
+          ▼
+       CognoDB
 ```
 
----
+## 📊 Graph Structure
 
-## 🤝 Network Recommendation
+The application works with the following main nodes:
 
-Suggests attendees with similar skills for networking.
+* Attendee
+* Skill
+* Topic
+* Session
+* Recruiter
+* Company
 
-Graph Relationship:
+Some of the important connections are:
 
-```
-Attendee → HAS_SKILL → Skill ← HAS_SKILL ← Attendee
-```
+```text
+Attendee ── HAS_SKILL ──> Skill
 
-Example Response (Attendee ID = 1)
+Attendee ── INTERESTED_IN ──> Topic
 
-```json
-[
-  {
-    "name": "Priya"
-  }
-]
-```
+Session ── COVERS ──> Topic
 
----
+Recruiter ── HIRING_FOR ──> Skill
 
-# 🛠 Technology Stack
-
-## Backend
-
-- Java
-- Spring Boot
-- Maven
-- Neo4j Java Driver
-- REST APIs
-
-## Frontend
-
-- React
-- Vite
-- Axios
-- CSS
-
-## Database
-
-- CognoDB
-- openCypher
-
----
-
-# 🏗 System Architecture
-
-```
-              React Frontend
-                    │
-                 Axios API
-                    │
-             Spring Boot Backend
-                    │
-          Neo4j Java Driver
-                    │
-          CognoDB Graph Database
+Recruiter ── WORKS_FOR ──> Company
 ```
 
----
+These relationships are used to generate recommendations.
 
-# 📊 Graph Data Model
+## 🔗 Available APIs
 
-## Nodes
+### Initialize Sample Data
 
-- Attendee
-- Skill
-- Topic
-- Session
-- Recruiter
-- Company
-
-## Relationships
-
-```
-Attendee -[:HAS_SKILL]-> Skill
-
-Attendee -[:INTERESTED_IN]-> Topic
-
-Topic <-[:COVERS]- Session
-
-Recruiter -[:HIRING_FOR]-> Skill
-
-Recruiter -[:WORKS_FOR]-> Company
-
-Attendee -[:HAS_SKILL]-> Skill <-[:HAS_SKILL]- Attendee
-```
-
----
-
-# 🔗 REST API Endpoints
-
-## Seed Database
-
-```
+```http
 GET /seed
 ```
 
----
+### Session Suggestions
 
-## Recommend Sessions
-
-```
+```http
 GET /recommend/sessions/{attendeeId}
 ```
 
-Example
+Example:
 
+```text
+/recommend/sessions/1
 ```
-GET /recommend/sessions/1
-```
 
----
+### Recruiter Suggestions
 
-## Recommend Recruiters
-
-```
+```http
 GET /recommend/recruiters/{attendeeId}
 ```
 
-Example
+Example:
 
+```text
+/recommend/recruiters/1
 ```
-GET /recommend/recruiters/1
-```
 
----
+### Networking Suggestions
 
-## Recommend Network
-
-```
+```http
 GET /recommend/network/{attendeeId}
 ```
 
-Example
+Example:
 
+```text
+/recommend/network/1
 ```
-GET /recommend/network/1
-```
 
----
+## 📁 Folder Organization
 
-# 📂 Project Structure
-
-```
-WEXA-AI-Assignment
+```text
+ConferenceNetworkingPlatform
 │
 ├── backend
 │   ├── src
-│   ├── pom.xml
-│   └── ...
+│   └── pom.xml
 │
 ├── frontend
 │   ├── src
-│   ├── package.json
-│   └── ...
+│   └── package.json
 │
 ├── screenshots
-│   ├── home.png
-│   ├── sessions.png
-│   ├── recruiters.png
-│   └── network.png
 │
-├── README.md
-└── .gitignore
+└── README.md
 ```
 
----
+## ⚙️ Configuration
 
-# ▶️ Running the Project
+The backend requires CognoDB connection details.
 
+Configure:
 
-## Environment Variables
+```text
+COGNODB_URI
+COGNODB_USERNAME
+COGNODB_PASSWORD
+```
 
-Configure the following environment variables before starting the backend:
+Keep credentials in environment variables instead of committing them to GitHub.
 
-| Variable | Description |
-|----------|-------------|
-| COGNODB_URI | CognoDB Bolt URI |
-| COGNODB_USERNAME | CognoDB Username |
-| COGNODB_PASSWORD | CognoDB Password |
+## ▶️ Start the Backend
 
-## Backend
-
-Navigate to the backend folder
+Open a terminal in the backend directory:
 
 ```bash
 cd backend
-```
-
-Run the application
-
-```bash
 mvn spring-boot:run
 ```
 
-Backend runs on
+Backend URL:
 
-```
+```text
 http://localhost:8082
 ```
 
----
+## ▶️ Start the Frontend
 
-## Frontend
-
-Navigate to the frontend folder
+Open another terminal:
 
 ```bash
 cd frontend
-```
-
-Install dependencies
-
-```bash
 npm install
-```
-
-Start the application
-
-```bash
 npm run dev
 ```
 
-Frontend runs on
+Frontend URL:
 
-```
+```text
 http://localhost:5173
 ```
 
----
+## 💡 Why Use a Graph Database?
 
-# 📸 Screenshots
+The recommendation features depend on connections between different entities.
 
-## Home Page
-
-![Home Page](screenshots/home.png)
-
----
-
-## Session Recommendation
-
-![Session Recommendation](screenshots/sessions.png)
-
----
-
-## Recruiter Recommendation
-
-![Recruiter Recommendation](screenshots/recruiters.png)
-
----
-
-## Network Recommendation
-
-![Network Recommendation](screenshots/network.png)
-
----
-
-
-## Why a Graph Database?
-
-Traditional relational databases require complex JOIN operations to discover relationships between attendees, sessions, recruiters, and skills.
-
-A graph database models these relationships naturally using nodes and relationships, making multi-hop traversals efficient and easier to understand.
-
-Using CognoDB allows the application to quickly recommend sessions, recruiters, and networking opportunities based on connected data.
-
-## Data Model Diagram
+For example, an attendee's skill can lead to a recruiter, which can lead to a company. A graph database makes these relationships straightforward to represent and traverse.
 
 ```text
-(Attendee)
-   │
-   ├── HAS_SKILL ─────► (Skill)
-   │
-   ├── INTERESTED_IN ─► (Topic)
-                          ▲
-                          │ COVERS
-                      (Session)
-
-(Recruiter)
-      │
-HIRING_FOR
-      ▼
-   (Skill)
-
-(Recruiter)
-      │
- WORKS_FOR
-      ▼
-  (Company)
+Attendee
+   ↓
+Skill
+   ↓
+Recruiter
+   ↓
+Company
 ```
 
-## Setting Up CognoDB
+The same approach can be used to discover sessions and potential networking connections.
 
-1. Create a CognoDB account.
-2. Create a new graph database instance.
-3. Copy the Bolt URI, username, and password.
-4. Configure the following environment variables:
+## 🔮 Possible Improvements
 
-- COGNODB_URI
-- COGNODB_USERNAME
-- COGNODB_PASSWORD
+* Authentication and user profiles
+* Better recommendation ranking
+* Graph visualization
+* Conference schedule management
+* Attendee messaging
+* Personalized user dashboard
 
-5. Run the seed script to populate sample data.
+## 👩‍💻 Project
 
-## Main Cypher Queries
+**Conference Networking Platform**
 
-### Session Recommendation
-
-Matches attendee interests with session topics.
-
-### Recruiter Recommendation
-
-Finds recruiters hiring for the attendee's skills.
-
-### Network Recommendation
-
-Finds attendees with similar skills.
-
-
-# 🚀 Future Enhancements
-
-- User Authentication
-- Graph Visualization
-- Personalized Recommendation Ranking
-- Conference Schedule Management
-- Chat Between Attendees
-- Advanced Multi-hop Recommendations
-
----
-
-# 👩‍💻 Author
-
-**Lahari**
-
-Developed as part of the **WEXA AI Graph Database Take-Home Assignment**.
+A graph-based recommendation application built using **Spring Boot, React, and CognoDB** as part of a WEXA AI assignment.
